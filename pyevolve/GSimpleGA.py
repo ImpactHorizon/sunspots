@@ -717,6 +717,7 @@ class GSimpleGA(object):
 
         logging.debug("Evaluating the new created population.")
         newPop.evaluate()
+        newPop.sort()
 
         if self.elitism:
             logging.debug("Doing elitism.")
@@ -724,13 +725,13 @@ class GSimpleGA(object):
                 for i in xrange(self.nElitismReplacement):
                     #re-evaluate before being sure this is the best
                     self.internalPop.bestRaw(i).evaluate()
-                    if self.internalPop.bestRaw(i).score > newPop.bestRaw(i).score:
+                    if self.internalPop.bestRaw(i).score > newPop[len(newPop) - 1 - i].score:
                         newPop[len(newPop) - 1 - i] = self.internalPop.bestRaw(i)
             elif self.getMinimax() == Consts.minimaxType["minimize"]:
                 for i in xrange(self.nElitismReplacement):
                     #re-evaluate before being sure this is the best
                     self.internalPop.bestRaw(i).evaluate()
-                    if self.internalPop.bestRaw(i).score < newPop.bestRaw(i).score:
+                    if self.internalPop.bestRaw(i).score < newPop[len(newPop) - 1 - i].score:
                         newPop[len(newPop) - 1 - i] = self.internalPop.bestRaw(i)
 
         self.internalPop = newPop

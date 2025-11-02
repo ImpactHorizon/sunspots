@@ -84,7 +84,7 @@ def gp_mode_filter(src, params):
     return src.filter(ImageFilter.ModeFilter(params['pos_int']))
     
 def eval_fitness_mean_diff(chromosome):
-    rmse_accum = Util.VectorErrorAccumulator()    
+    rmse_accum = Util.VectorErrorAccumulator()
     code = chromosome.getCompiledCode()
     evaluated = np.array(eval(code[0]))
     rmse_accum.append(evaluated, target)
@@ -121,24 +121,23 @@ def main():
     kernel = """ [rand_uniform(0.1, 2.5) for x in range(0,25) ] """
     kernel_size_rad = """ rand_choice([3, 5]) """
     
-    random.seed(datetime.now())
+    random.seed(13)
     
     global im, target, tfft
     orig = Image.open(TARGET)    
     target = np.array(orig)     
     im = Image.open(INPUT)    
-    im.load()
-    
-    genome = G2DCartesian.G2DCartesian(32, 3, 1, 1)
+    im.load()    
+    genome = G2DCartesian.G2DCartesian(128, 3, 1, 1)
     genome.evaluator += eval_fitness_mean_diff
-    ga = GSimpleGA.GSimpleGA(genome)
+    ga = GSimpleGA.GSimpleGA(genome, seed=13)
     genome.mutator.set(Mutators.G2DCartesianMutatorNodeParams)
     genome.mutator.add(Mutators.G2DCartesianMutatorNodeInputs)
     genome.mutator.add(Mutators.G2DCartesianMutatorNodeFunction)
     genome.mutator.add(Mutators.G2DCartesianMutatorNodesOrder)
-    ga.setPopulationSize(5)
-    ga.setGenerations(10000)
-    ga.setMultiThreading(True)
+    ga.setPopulationSize(8)
+    ga.setGenerations(200)
+    #ga.setMultiThreading(True)
     ga.setMinimax(Consts.minimaxType["minimize"])
     ga.setParams(gp_function_prefix = "gp", gp_terminals = ['im'], 
                     gp_args_mapping = { "pos_int" : pos_int,
@@ -154,10 +153,10 @@ def main():
     ga.stepCallback.set(step_callback)    
     
     ga(freq_stats=100)
-    
+    end = datetime.now()
     best = ga.bestIndividual()  
     store_result(best, "best_%s.png" % (best.score))
-    store_graph(best, "best_graph_%s.png" % (best.score))                
+    store_graph(best, "best_graph_%s.png" % (best.score))                    
 
 if __name__ == "__main__":       
     main()

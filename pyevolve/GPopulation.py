@@ -413,7 +413,6 @@ class GPopulation(object):
       :param args: this params are passed to the evaluation function
 
       """
-      
       # We have multithreading
       if self.multiThreading[0] and MULTI_THREADING:
         logging.debug("Evaluating the population using the" 
@@ -423,7 +422,7 @@ class GPopulation(object):
             spawn_size = len(self)
         else:
             spawn_size = self.multiThreading[1]
-        
+
         for counter in xrange(0, len(self), spawn_size):
             current_threads.clear()
             is_overflow = (counter + spawn_size) > len(self)
